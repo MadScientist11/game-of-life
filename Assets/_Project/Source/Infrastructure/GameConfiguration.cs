@@ -9,7 +9,6 @@ namespace ConwaysGameOfLife.Source.Infrastructure
         public int GridHeight;
         public float CellSize;
 
-        public GameObject GridCell;
         public Material CellMaterial;
     }
 }
