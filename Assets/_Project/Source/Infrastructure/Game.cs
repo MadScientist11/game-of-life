@@ -6,9 +6,10 @@ namespace ConwaysGameOfLife.Source.Infrastructure
     public class Game : MonoBehaviour
     {
         [SerializeField] private GameConfiguration _gameConfiguration;
+        [SerializeField] private GameFactory.AlgorithmProcessing _algorithmProcessing;
+        [SerializeField] private GameFactory.RenderType _renderType;
         private GameOfLife _gameOfLife;
         private IGameRenderer _gameRenderer;
-        private InstancingTileRenderer _tileRenderer;
 
         private float _currentTime;
         private float _delay = 0.5f;
@@ -16,14 +17,17 @@ namespace ConwaysGameOfLife.Source.Infrastructure
 
         private void Start()
         {
-            _gameOfLife = GameFactory.CreateGameOfLife(_gameConfiguration, GameFactory.GameType.RenderMeshInstancedWithJobs);
+            _gameOfLife = GameFactory.CreateGameOfLife(_gameConfiguration,
+                _algorithmProcessing);
             _gameRenderer =
-                GameFactory.CreateGameRenderer(_gameOfLife, _gameConfiguration, GameFactory.GameType.RenderMeshInstancedWithJobs);
+                GameFactory.CreateGameRenderer(_gameOfLife, _gameConfiguration,
+                    _renderType);
         }
 
         private void OnDestroy()
         {
             _gameOfLife.Dispose();
+            _gameRenderer.Dispose();
         }
 
         private void Update()

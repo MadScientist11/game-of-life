@@ -1,18 +1,19 @@
-﻿using System.Collections.Generic;
 using ConwaysGameOfLife.Source.Infrastructure;
+using ConwaysGameOfLife.Source.RenderMeshInstancedJobs;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
 
-namespace ConwaysGameOfLife.Source.RenderMeshInstancedJobs
+namespace ConwaysGameOfLife.Source.InstanceIndirect
 {
-    public class InstancingWithJobsGameRender : IGameRenderer
+    public class InstancingIndirectGameRenderer : IGameRenderer
     {
-        private readonly GameConfiguration _gameConfiguration;
+        private readonly InstancingIndirectTileRenderer _tileRenderer;
         private readonly GameOfLife _gameOfLife;
-        private readonly InstancingTileRenderer _tileRenderer;
+        private readonly GameConfiguration _gameConfiguration;
 
-        public InstancingWithJobsGameRender(GameConfiguration gameConfiguration, GameOfLife gameOfLife, InstancingTileRenderer tileRenderer)
+        public InstancingIndirectGameRenderer(GameConfiguration gameConfiguration, GameOfLife gameOfLife,
+            InstancingIndirectTileRenderer tileRenderer)
         {
             _gameConfiguration = gameConfiguration;
             _gameOfLife = gameOfLife;
@@ -31,15 +32,11 @@ namespace ConwaysGameOfLife.Source.RenderMeshInstancedJobs
                 RenderData = renderData.AsParallelWriter()
             };
 
-
             JobHandle jobHandle = renderJobInstancing.Schedule(_gameOfLife.Grid.Cells.Length, 64);
             jobHandle.Complete();
 
-
             NativeArray<Matrix4x4> renderDataArray = renderData.ToArray(Allocator.TempJob);
-
             _tileRenderer.Render(renderDataArray);
-
 
             renderData.Dispose();
             renderDataArray.Dispose();
@@ -47,7 +44,7 @@ namespace ConwaysGameOfLife.Source.RenderMeshInstancedJobs
 
         public void Dispose()
         {
-            
+            _tileRenderer.Dispose();
         }
     }
 }

@@ -14,5 +14,10 @@ namespace ConwaysGameOfLife.Source.Infrastructure
             Box = box;
             Populated = false;
         }
+        
+        public static int GetSize()
+        {
+            return sizeof(float) * 13 + sizeof(int) * 4;
+        }
     }
 }

@@ -16,6 +16,7 @@
         public void RunGeneration() =>
             _generationProcessor.RunGeneration();
 
+
         public void Dispose()
         {
             _grid.Cells.Dispose();

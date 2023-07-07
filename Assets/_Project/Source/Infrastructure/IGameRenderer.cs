@@ -3,5 +3,6 @@
     public interface IGameRenderer
     {
         void Render();
+        void Dispose();
     }
 }

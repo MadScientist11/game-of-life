@@ -1,4 +1,5 @@
 ﻿using System;
+using ConwaysGameOfLife.Source.InstanceIndirect;
 using ConwaysGameOfLife.Source.RenderMeshInstanced;
 using ConwaysGameOfLife.Source.RenderMeshInstancedJobs;
 using UnityEngine;
@@ -7,42 +8,58 @@ namespace ConwaysGameOfLife.Source.Infrastructure
 {
     public static class GameFactory
     {
-        public enum GameType
+        public enum RenderType
         {
-            RenderMeshInstanced = 0,
-            RenderMeshInstancedWithJobs = 1,
+            Instancing = 0,
+            InstancingJobs = 1,
+            IndirectJobs = 2,
+        }
+        
+        public enum AlgorithmProcessing
+        {
+            Simple = 0,
+            Jobs = 1,
         }
 
-        public static GameOfLife CreateGameOfLife(GameConfiguration gameConfiguration, GameType gameType)
+        public static GameOfLife CreateGameOfLife(GameConfiguration gameConfiguration,
+            AlgorithmProcessing algorithmProcessing)
         {
             Grid grid = new Grid(gameConfiguration.GridWidth, gameConfiguration.GridHeight, gameConfiguration.CellSize,
                 Vector2.zero);
             grid.Initialize();
-            return gameType switch
+            
+            switch (algorithmProcessing)
             {
-                GameType.RenderMeshInstanced => new GameOfLife(grid, new SimpleGenerationProcessor(grid)),
-                GameType.RenderMeshInstancedWithJobs => new GameOfLife(grid, new JobsGenerationProcessor(grid)),
-                _ => throw new ArgumentOutOfRangeException(nameof(gameType), gameType, null)
-            };
+                case AlgorithmProcessing.Simple:
+                    return new GameOfLife(grid, new SimpleGenerationProcessor(grid));
+                case AlgorithmProcessing.Jobs:
+                    return new GameOfLife(grid, new JobsGenerationProcessor(grid));
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(algorithmProcessing), algorithmProcessing, null);
+            }
         }
 
         public static IGameRenderer CreateGameRenderer(GameOfLife gameOfLife, GameConfiguration gameConfiguration,
-            GameType gameType)
+            RenderType renderType)
         {
-
             InstancingTileRenderer instancingTileRenderer = new InstancingTileRenderer(gameConfiguration.CellMaterial);
             instancingTileRenderer.Initialize();
-            switch (gameType)
+            switch (renderType)
             {
-                case GameType.RenderMeshInstanced:
-              
+                case RenderType.Instancing:
                     return new InstancingGameRender(gameOfLife, instancingTileRenderer);
-                case GameType.RenderMeshInstancedWithJobs:
-           
+                case RenderType.InstancingJobs:
                     return new InstancingWithJobsGameRender(gameConfiguration, gameOfLife, instancingTileRenderer);
+                case RenderType.IndirectJobs:
+                    InstancingIndirectTileRenderer indirectTileRenderer =
+                        new InstancingIndirectTileRenderer(gameConfiguration);
+                    indirectTileRenderer.Initialize();
+                    return new InstancingIndirectGameRenderer(gameConfiguration, gameOfLife, indirectTileRenderer);
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(gameType), gameType, null);
+                    throw new ArgumentOutOfRangeException(nameof(renderType), renderType, null);
             }
+            
+          
         }
     }
 }

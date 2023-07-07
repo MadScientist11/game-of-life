@@ -12,7 +12,7 @@ namespace ConwaysGameOfLife.Source.RenderMeshInstanced
         private readonly List<Vector2Int> _nextGenDeadCells = new();
         private readonly List<Vector2Int> _nextGenAliveCells = new();
 
-        public SimpleGenerationProcessor(Infrastructure.Grid grid)
+        public SimpleGenerationProcessor(Grid grid)
         {
             _grid = grid;
         }

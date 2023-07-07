@@ -10,5 +10,8 @@ namespace ConwaysGameOfLife.Source.Infrastructure
         public float CellSize;
 
         public Material CellMaterial;
+        public Material CellMaterialForIndirectInstancing;
+        
+        public ComputeShader GameCompute;
     }
 }

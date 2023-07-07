@@ -35,5 +35,10 @@ namespace ConwaysGameOfLife.Source.RenderMeshInstanced
 
             _tileRenderer.Render(_renderTilesData);
         }
+
+        public void Dispose()
+        {
+            
+        }
     }
 }
