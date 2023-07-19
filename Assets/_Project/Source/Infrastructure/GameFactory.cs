@@ -19,7 +19,9 @@ namespace ConwaysGameOfLife.Source.Infrastructure
         {
             Simple = 0,
             Jobs = 1,
+            Compute = 2,
         }
+
 
         public static GameOfLife CreateGameOfLife(GameConfiguration gameConfiguration,
             AlgorithmProcessing algorithmProcessing)
@@ -34,6 +36,12 @@ namespace ConwaysGameOfLife.Source.Infrastructure
                     return new GameOfLife(grid, new SimpleGenerationProcessor(grid));
                 case AlgorithmProcessing.Jobs:
                     return new GameOfLife(grid, new JobsGenerationProcessor(grid));
+                case AlgorithmProcessing.Compute:
+                    Debug.LogWarning("Compute generation is not supported yet");
+                    ComputeShader shader = Resources.Load<ComputeShader>("GameCompute");
+                    ComputeGenerationProcessor processor = new ComputeGenerationProcessor(shader, grid);
+                    processor.Initialize();
+                    return new GameOfLife(grid, processor);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(algorithmProcessing), algorithmProcessing, null);
             }

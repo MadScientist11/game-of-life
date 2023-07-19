@@ -10,17 +10,15 @@ namespace ConwaysGameOfLife.Source.InstanceIndirect
     {
         private readonly ComputeShader _generationCS;
         private readonly Grid _grid;
-        private readonly GameConfiguration _gameConfiguration;
         private readonly int[] _dx = { -1, -1, -1, 0, 0, 1, 1, 1 };
         private readonly int[] _dy = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
         private int _computeKernel;
 
-        private int[] _populationArray;
+        private Cell[] _populationArray;
 
-        public ComputeGenerationProcessor(GameConfiguration gameConfiguration, ComputeShader generationCs, Grid grid)
+        public ComputeGenerationProcessor(ComputeShader generationCs, Grid grid)
         {
-            _gameConfiguration = gameConfiguration;
             _generationCS = generationCs;
             _grid = grid;
         }
@@ -29,39 +27,25 @@ namespace ConwaysGameOfLife.Source.InstanceIndirect
         public void Initialize()
         {
             _computeKernel = _generationCS.FindKernel("ComputeGeneration");
-            _generationCS.SetInt("gridWidth", _gameConfiguration.GridWidth);
-            _generationCS.SetInt("gridHeight", _gameConfiguration.GridHeight);
+            _generationCS.SetInt("gridWidth", _grid.Width);
+            _generationCS.SetInt("gridHeight", _grid.Height);
             _generationCS.SetInts("dX", _dx);
             _generationCS.SetInts("dY", _dy);
-            _populationArray = new int[_grid.Cells.Length];
+            _populationArray = new Cell[_grid.Cells.Length];
         }
 
         public void RunGeneration()
         {
-            NativeArray<int> cellPopulation = new NativeArray<int>(_grid.Cells.Length, Allocator.Temp,
-                NativeArrayOptions.UninitializedMemory);
-            for (var i = 0; i < _grid.Cells.Length; i++)
-            {
-                cellPopulation[i] = Convert.ToInt32(_grid.Cells[i].Populated);
-            }
-
             ComputeBuffer gamePopulation =
-                new ComputeBuffer(_gameConfiguration.GridWidth * _gameConfiguration.GridHeight, sizeof(int));
-            gamePopulation.SetData(cellPopulation);
+                new ComputeBuffer(_grid.Width * _grid.Height, Cell.GetSize());
+            gamePopulation.SetData(_grid.Cells);
             _generationCS.SetBuffer(_computeKernel, "gamePopulation", gamePopulation);
             ComputeBuffer newGamePopulation =
-                new ComputeBuffer(_gameConfiguration.GridWidth * _gameConfiguration.GridHeight, sizeof(int));
-            _generationCS.SetBuffer(_computeKernel, "newGamePopulation", gamePopulation);
+                new ComputeBuffer(_grid.Width * _grid.Height, Cell.GetSize());
+            _generationCS.SetBuffer(_computeKernel, "newGamePopulation", newGamePopulation);
             DispatchShader();
             newGamePopulation.GetData(_populationArray);
-            
-            //for (var i = 0; i < _grid.Cells.Length; i++)
-            //{
-            //    Cell cell = new Cell(_grid.Cells[i].Box);
-            //    cell.Populated = Convert.ToBoolean(_populationArray[i]);
-            //    _grid.Cells[i] = cell;
-            //}
-            
+            _grid.Cells.CopyFrom(_populationArray);
             gamePopulation.Dispose();
             newGamePopulation.Dispose();
         }
@@ -69,8 +53,8 @@ namespace ConwaysGameOfLife.Source.InstanceIndirect
         private void DispatchShader()
         {
             _generationCS.GetKernelThreadGroupSizes(_computeKernel, out uint x, out uint y, out _);
-            int threadGroupsX = Mathf.CeilToInt(_gameConfiguration.GridWidth / x);
-            int threadGroupsY = Mathf.CeilToInt(_gameConfiguration.GridHeight / y);
+            int threadGroupsX = Mathf.CeilToInt(_grid.Width / x);
+            int threadGroupsY = Mathf.CeilToInt(_grid.Height / y);
             _generationCS.Dispatch(_computeKernel, threadGroupsX, threadGroupsY, 1);
         }
     }

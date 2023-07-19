@@ -589,7 +589,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _gameConfiguration: {fileID: 11400000, guid: 8fd8f376e5d29f64bbcd3f7cecb44fd5, type: 2}
-  _algorithmProcessing: 1
+  _algorithmProcessing: 2
   _renderType: 2
 --- !u!1 &1161407981
 GameObject:

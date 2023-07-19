@@ -1,0 +1,79 @@
+#pragma kernel ComputeGeneration
+struct Cell
+{
+    float2 Position;
+    float2 Extents;
+    int Populated;
+};
+
+StructuredBuffer<Cell> gamePopulation;
+RWStructuredBuffer<Cell> newGamePopulation;
+
+int dX[8];
+int dY[8];
+
+int gridWidth;
+int gridHeight;
+
+int To1DIndex(int x, int y)
+{
+    return x * gridWidth + y;
+}
+
+
+int GetAliveNeighboursCount(int x, int y)
+{
+    int aliveNeighboursCount = 0;
+    for (int i = 0; i < 8; i++)
+    {
+        int newRow = x + dX[i];
+        int newCol = y + dY[i];
+
+        if (newRow >= 0 && newRow < gridHeight && newCol >= 0 && newCol < gridWidth)
+        {
+            if (gamePopulation[To1DIndex(x, y)].Populated == 1)
+            {
+                aliveNeighboursCount++;
+            }
+        }
+    }
+
+    return aliveNeighboursCount;
+}
+
+
+bool AliveCellWithTwoOrThreeSurvivalsLives(int isCellPopulated, int aliveNeighboursCount)
+{
+    return isCellPopulated == 1 && (aliveNeighboursCount == 2 || aliveNeighboursCount == 3);
+}
+
+bool AnyDeadCellWithThreeSurvivalsBecomesAlive(int isCellPopulated, int aliveNeighboursCount)
+{
+    return isCellPopulated == 0 && aliveNeighboursCount == 3;
+}
+
+bool AreRulesForCellSurvivalSatisfied(int x, int y)
+{
+    int isCellPopulated = gamePopulation[To1DIndex(x, y)].Populated;
+    int aliveNeighboursCount = 2;
+
+
+    return AliveCellWithTwoOrThreeSurvivalsLives(isCellPopulated, aliveNeighboursCount) ||
+        AnyDeadCellWithThreeSurvivalsBecomesAlive(isCellPopulated, aliveNeighboursCount);
+}
+
+
+[numthreads(8,8,1)]
+void ComputeGeneration(uint3 id : SV_DispatchThreadID)
+{
+    Cell newCell = gamePopulation[To1DIndex(id.x, id.y)];
+    if(newCell.Populated > 0)
+    {
+        newCell.Populated = 0;
+    }
+    else
+    {
+        newCell.Populated = 1;
+    }
+    newGamePopulation[To1DIndex(id.x, id.y)] = newCell;
+}
