@@ -55,12 +55,12 @@ namespace ConwaysGameOfLife.Source.InstanceIndirect
             DispatchShader();
             newGamePopulation.GetData(_populationArray);
             
-            for (var i = 0; i < _grid.Cells.Length; i++)
-            {
-                Cell cell = new Cell(_grid.Cells[i].Box);
-                cell.Populated = Convert.ToBoolean(_populationArray[i]);
-                _grid.Cells[i] = cell;
-            }
+            //for (var i = 0; i < _grid.Cells.Length; i++)
+            //{
+            //    Cell cell = new Cell(_grid.Cells[i].Box);
+            //    cell.Populated = Convert.ToBoolean(_populationArray[i]);
+            //    _grid.Cells[i] = cell;
+            //}
             
             gamePopulation.Dispose();
             newGamePopulation.Dispose();

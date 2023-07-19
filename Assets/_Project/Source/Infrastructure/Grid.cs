@@ -69,7 +69,7 @@ namespace ConwaysGameOfLife.Source.Infrastructure
 
                     if (Random.Value > 0.9f)
                     {
-                        Cell cell = new Cell(Cells[index].Box);
+                        Cell cell = Cells[index];
                         cell.Populated = true;
                         Cells[index] = cell;
                     }
@@ -103,7 +103,7 @@ namespace ConwaysGameOfLife.Source.Infrastructure
                 : this[i, j].Position - new Vector2(_cellSize / 2, _cellSize / 2);
             return Matrix4x4.TRS(position, Quaternion.identity, _cellSize * Vector3.one);
         }
-    
+
         public void PopulateCell(int x, int y)
         {
             Cell cell = this[x, y];
@@ -133,7 +133,7 @@ namespace ConwaysGameOfLife.Source.Infrastructure
 
             for (int i = 0; i < Length; i++)
             {
-                if (Cells[i].Box.Contains(point))
+                if (Cells[i].Contains(point))
                 {
                     coords = new Vector2Int(i / Width, i % Width);
                     return true;
@@ -151,7 +151,9 @@ namespace ConwaysGameOfLife.Source.Infrastructure
                          _grid.extents * _cellSize,
                 extents = new Vector2(_cellSize / 2, _cellSize / 2)
             };
-            return new Cell(cellBox);
+            return new Cell(cellBox.center, cellBox.extents);
         }
+
+
     }
 }

@@ -19,7 +19,7 @@ namespace ConwaysGameOfLife.Source.RenderMeshInstancedJobs
 
         public void Execute(int index)
         {
-            Cell cell = new Cell(Cells[index].Box);
+            Cell cell = Cells[index];
             NativeArray<int> index2D = To2DIndex(index);
 
             cell.Populated = AreRulesForCellSurvivalSatisfied(index2D[0], index2D[1]);
