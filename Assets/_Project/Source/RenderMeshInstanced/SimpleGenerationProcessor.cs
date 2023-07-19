@@ -51,14 +51,14 @@ namespace ConwaysGameOfLife.Source.RenderMeshInstanced
 
         private bool AreRulesForCellSurvivalSatisfied(int x, int y)
         {
-            bool isCellPopulated = _grid[x, y].Populated;
+            int isCellPopulated = _grid[x, y].Populated;
             List<Cell> neighbours = _grid.GetNeighbours(x, y);
 
             int aliveNeighboursCount = 0;
             int neighboursCount = neighbours.Count;
             for (var i = 0; i < neighboursCount; i++)
             {
-                if (neighbours[i].Populated)
+                if (neighbours[i].Populated == 1)
                     aliveNeighboursCount++;
             }
 
@@ -68,15 +68,15 @@ namespace ConwaysGameOfLife.Source.RenderMeshInstanced
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool AliveCellWithTwoOrThreeSurvivalsLives(bool isCellPopulated, int aliveNeighboursCount)
+        private bool AliveCellWithTwoOrThreeSurvivalsLives(int isCellPopulated, int aliveNeighboursCount)
         {
-            return isCellPopulated && (aliveNeighboursCount == 2 || aliveNeighboursCount == 3);
+            return isCellPopulated == 1 && (aliveNeighboursCount == 2 || aliveNeighboursCount == 3);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool AnyDeadCellWithThreeSurvivalsBecomesAlive(bool isCellPopulated, int aliveNeighboursCount)
+        private bool AnyDeadCellWithThreeSurvivalsBecomesAlive(int isCellPopulated, int aliveNeighboursCount)
         {
-            return !isCellPopulated && aliveNeighboursCount == 3;
+            return isCellPopulated == 0 && aliveNeighboursCount == 3;
         }
     }
 }

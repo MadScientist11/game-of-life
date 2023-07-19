@@ -70,7 +70,7 @@ namespace ConwaysGameOfLife.Source.Infrastructure
                     if (Random.Value > 0.9f)
                     {
                         Cell cell = Cells[index];
-                        cell.Populated = true;
+                        cell.Populated = 1;
                         Cells[index] = cell;
                     }
                 }
@@ -108,10 +108,10 @@ namespace ConwaysGameOfLife.Source.Infrastructure
         {
             Cell cell = this[x, y];
 
-            if (cell.Populated)
+            if (cell.Populated == 1)
                 return;
 
-            cell.Populated = true;
+            cell.Populated = 1;
             this[x, y] = cell;
         }
 
@@ -119,10 +119,10 @@ namespace ConwaysGameOfLife.Source.Infrastructure
         {
             Cell cell = this[x, y];
 
-            if (!cell.Populated)
+            if (cell.Populated == 0)
                 return;
 
-            cell.Populated = false;
+            cell.Populated = 0;
             this[x, y] = cell;
         }
 

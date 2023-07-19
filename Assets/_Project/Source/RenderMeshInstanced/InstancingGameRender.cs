@@ -26,7 +26,7 @@ namespace ConwaysGameOfLife.Source.RenderMeshInstanced
             {
                 for (int j = 0; j < columns; j++)
                 {
-                    if (_gameOfLife.Grid[i, j].Populated)
+                    if (_gameOfLife.Grid[i, j].Populated == 1)
                     {
                         _renderTilesData.Add(_gameOfLife.Grid.GetCellTransformMatrix(i, j, false));
                     }

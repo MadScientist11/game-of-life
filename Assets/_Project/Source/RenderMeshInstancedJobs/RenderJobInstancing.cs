@@ -16,7 +16,7 @@ namespace ConwaysGameOfLife.Source.RenderMeshInstancedJobs
         public void Execute(int index)
         {
             Cell cell = Cells[index];
-            if (cell.Populated)
+            if (cell.Populated == 1)
                 RenderData.Enqueue(ConstructMatrix(cell));
         }
 

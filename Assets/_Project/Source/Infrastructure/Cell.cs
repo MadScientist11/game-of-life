@@ -1,4 +1,5 @@
-﻿using Freya;
+﻿using System;
+using Freya;
 using UnityEngine;
 
 namespace ConwaysGameOfLife.Source.Infrastructure
@@ -7,13 +8,13 @@ namespace ConwaysGameOfLife.Source.Infrastructure
     {
         public Vector2 Position;
         public Vector2 Extents;
-        public bool Populated;
+        public int Populated;
 
         public Cell(Vector2 position, Vector2 extents)
         {
             Position = position;
             Extents = extents;
-            Populated = false;
+            Populated = 0;
         }
         
         
@@ -23,7 +24,7 @@ namespace ConwaysGameOfLife.Source.Infrastructure
 
         public static int GetSize()
         {
-            return sizeof(float) * 13 + sizeof(int) * 4;
+            return sizeof(float) * 4 + sizeof(int) * 1;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using ConwaysGameOfLife.Source.Infrastructure;
+﻿using System;
+using ConwaysGameOfLife.Source.Infrastructure;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
@@ -22,7 +23,7 @@ namespace ConwaysGameOfLife.Source.RenderMeshInstancedJobs
             Cell cell = Cells[index];
             NativeArray<int> index2D = To2DIndex(index);
 
-            cell.Populated = AreRulesForCellSurvivalSatisfied(index2D[0], index2D[1]);
+            cell.Populated = Convert.ToInt32(AreRulesForCellSurvivalSatisfied(index2D[0], index2D[1]));
 
 
             NextGenCells[index] = cell;
@@ -83,14 +84,14 @@ namespace ConwaysGameOfLife.Source.RenderMeshInstancedJobs
 
         private bool AreRulesForCellSurvivalSatisfied(int x, int y)
         {
-            bool isCellPopulated = Cells[To1DIndex(x, y)].Populated;
+            int isCellPopulated = Cells[To1DIndex(x, y)].Populated;
             NativeList<Cell> neighbours = GetNeighbours(x, y);
 
             int aliveNeighboursCount = 0;
             int neighboursCount = neighbours.Length;
             for (var i = 0; i < neighboursCount; i++)
             {
-                if (neighbours[i].Populated)
+                if (neighbours[i].Populated == 1)
                     aliveNeighboursCount++;
             }
 
@@ -99,14 +100,14 @@ namespace ConwaysGameOfLife.Source.RenderMeshInstancedJobs
                    AnyDeadCellWithThreeSurvivalsBecomesAlive(isCellPopulated, aliveNeighboursCount);
         }
 
-        private bool AliveCellWithTwoOrThreeSurvivalsLives(bool isCellPopulated, int aliveNeighboursCount)
+        private bool AliveCellWithTwoOrThreeSurvivalsLives(int isCellPopulated, int aliveNeighboursCount)
         {
-            return isCellPopulated && (aliveNeighboursCount == 2 || aliveNeighboursCount == 3);
+            return isCellPopulated == 1 && (aliveNeighboursCount == 2 || aliveNeighboursCount == 3);
         }
 
-        private bool AnyDeadCellWithThreeSurvivalsBecomesAlive(bool isCellPopulated, int aliveNeighboursCount)
+        private bool AnyDeadCellWithThreeSurvivalsBecomesAlive(int isCellPopulated, int aliveNeighboursCount)
         {
-            return !isCellPopulated && aliveNeighboursCount == 3;
+            return isCellPopulated == 0 && aliveNeighboursCount == 3;
         }
     }
 }
